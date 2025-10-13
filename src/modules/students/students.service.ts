@@ -1,5 +1,5 @@
 import { TStudents } from './students.interface';
-import { Student } from './students.modal';
+import { Student } from './students.model';
 
 const createStudentIntoDB = async (studentData: TStudents) => {
   if (await Student.isUserExists(studentData.id)) {
