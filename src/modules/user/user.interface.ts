@@ -8,8 +8,3 @@ export type TUser = {
 };
 
 
-export type TNewUser ={
-  password: string;
-  role: string;
-  id: string;
-}

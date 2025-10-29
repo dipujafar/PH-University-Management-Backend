@@ -1,13 +1,11 @@
 import { Request, Response } from 'express';
 import { StudentServices } from './students.service';
-import studentValidateSchema from './students.validation';
 
 
 
 const getAllStudents = async (req: Request, res: Response) => {
   try {
     const result = await StudentServices.getAllStudentsFromDB();
-
     res.status(200).json({
       success: true,
       message: 'students retrieved successfully',

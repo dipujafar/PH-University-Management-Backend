@@ -92,6 +92,7 @@ const localGuardianSchema = new Schema({
 const studentSchema = new Schema<TStudents, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
+    user: { type: Schema.Types.ObjectId, ref: 'User', required: [true, 'User is required'], unique: true },
     password: {
       type: String,
       required: true,
@@ -142,11 +143,6 @@ const studentSchema = new Schema<TStudents, StudentModel>(
       required: [true, 'Local guardian is required'],
     },
     profileImage: { type: String },
-    isActive: {
-      type: String,
-      enum: ['active', 'block'],
-      default: 'active',
-    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -201,11 +197,6 @@ studentSchema.pre('aggregate', function (next) {
   this.pipeline().unshift({ $match: { isDeleted: { $ne: false } } });
   next();
 });
-
-/*************  ✨ Windsurf Command ⭐  *************/
-/**
- * Checks if a user already exists in the database
-/*******  bb759889-0c3d-4c27-a6e6-2c7215bdffc1  *******/ // create static method
 
 studentSchema.statics.isUserExists = async function (id: string) {
   const existingUser = await Student.findOne({ id });
