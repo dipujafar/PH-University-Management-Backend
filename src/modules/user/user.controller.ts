@@ -1,7 +1,9 @@
-import { Request, Response } from 'express';
+import { NextFunction, Request, Response } from 'express';
 import { UserServices } from './user.service';
+import sendResponse from '../../app/utils/sendResponse';
+import httpStatus from "http-status";
 
-const createStudent = async (req: Request, res: Response) => {
+const createStudent = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const { password, student: studentData } = req.body;
     // const zodParseData = studentValidateSchema.parse(studentData);
@@ -11,17 +13,20 @@ const createStudent = async (req: Request, res: Response) => {
       studentData,
     );
 
-    res.status(200).json({
+    // res.status(200).json({
+    //   success: true,
+    //   message: 'student created successfully',
+    //   data: result,
+    // });
+
+    sendResponse(res, {
+      statusCode: httpStatus.OK,
       success: true,
       message: 'student created successfully',
       data: result,
     });
-  } catch (error: any) {
-    res.status(500).json({
-      success: false,
-      message: error?.message || 'something went wrong',
-      error: error,
-    });
+  } catch (error) {
+    next(error);
   }
 };
 

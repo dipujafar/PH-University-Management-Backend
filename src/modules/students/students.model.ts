@@ -1,8 +1,6 @@
 import { Schema, model } from 'mongoose';
 import { StudentModel, TStudents } from './students.interface';
 import validator from 'validator';
-import bcrypt from 'bcrypt';
-import config from '../../app/config';
 
 const nameSchema = new Schema({
   firstName: {
@@ -93,11 +91,6 @@ const studentSchema = new Schema<TStudents, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
     user: { type: Schema.Types.ObjectId, ref: 'User', required: [true, 'User is required'], unique: true },
-    password: {
-      type: String,
-      required: true,
-      maxLength: [20, 'Password can not exceed 20 characters'],
-    },
     name: { type: nameSchema, required: [true, 'Name is required'] },
     gender: {
       type: String,
@@ -153,19 +146,7 @@ const studentSchema = new Schema<TStudents, StudentModel>(
   },
 );
 
-// pre save middleware / hook : will work on create() or save()
-studentSchema.pre('save', async function (next) {
-  // console.log(this, 'pre hook : will save data ');
-  // hashing password before saving in document
-  const user = this;
 
-  user.password = await bcrypt.hash(
-    this.password,
-    Number(config.bcrypt_salt_round),
-  );
-
-  next();
-});
 
 // virtual
 studentSchema.virtual('fullName').get(function () {
@@ -174,12 +155,7 @@ studentSchema.virtual('fullName').get(function () {
   );
 });
 
-// post save middleware / hook : will work on create() or save()
-studentSchema.post('save', function (doc, next) {
-  console.log(this, 'post hook: after save data');
-  doc.password = '';
-  next();
-});
+
 
 // query middleware
 studentSchema.pre('find', function (next) {
