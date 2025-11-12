@@ -43,34 +43,42 @@ const localGuardianValidationSchema = z.object({
 });
 
 // ----------- Main Student Schema ------------
-export const studentValidateSchema = z.object({
-  id: z.string().nonempty('ID is required'),
-  name: nameValidationSchema,
-  gender: z
-    .enum(['male', 'female', 'other'])
-    .refine(val => ['male', 'female', 'other'].includes(val), {
-      message:
-        "The gender field can only be one of: 'male', 'female', or 'other'",
+export const createStudentValidateSchema = z.object({
+  body: z.object({
+    password: z.string(),
+    student: z.object({
+      name: nameValidationSchema,
+      gender: z
+        .enum(['male', 'female', 'other'])
+        .refine(val => ['male', 'female', 'other'].includes(val), {
+          message:
+            "The gender field can only be one of: 'male', 'female', or 'other'",
+        }),
+      dateOfBirth: z.string().optional(),
+      email: z
+        .string()
+        .email('Email is not valid')
+        .nonempty('Email is required'),
+      contactNo: z.string().trim().optional(),
+      bloodGroup: z
+        .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
+        .refine(
+          val =>
+            ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].includes(val),
+          {
+            message:
+              "The blood group field can only be one of: 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'",
+          },
+        ),
+      presentAddress: z.string().nonempty('Present address is required').trim(),
+      permanentAddress: z.string().trim().optional(),
+      guardian: guardianValidationSchema,
+      localGuardian: localGuardianValidationSchema,
+      profileImage: z.string().optional(),
     }),
-  dateOfBirth: z.string().optional(),
-  email: z.string().email('Email is not valid').nonempty('Email is required'),
-  contactNo: z.string().trim().optional(),
-  bloodGroup: z
-    .enum(['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'])
-    .refine(
-      val => ['A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'].includes(val),
-      {
-        message:
-          "The blood group field can only be one of: 'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'",
-      },
-    ),
-  presentAddress: z.string().nonempty('Present address is required').trim(),
-  permanentAddress: z.string().trim().optional(),
-  guardian: guardianValidationSchema,
-  localGuardian: localGuardianValidationSchema,
-  profileImage: z.string().optional(),
-  isActive: z.enum(['active', 'block']).default('active'),
-  isDeleted: z.boolean().optional()
+  }),
 });
 
-export default studentValidateSchema;
+export const studentValidations = {
+  createStudentValidateSchema,
+};

@@ -2,7 +2,6 @@ import config from '../../app/config';
 import { TStudents } from '../students/students.interface';
 import { Student } from '../students/students.model';
 import { TUser } from './user.interface';
-
 import { User } from './user.model';
 
 const createStudentIntoDB = async (
@@ -24,8 +23,6 @@ const createStudentIntoDB = async (
     const newStudent = await Student.create(studentData);
     return newStudent;
   }
-
-  
 };
 
 export const UserServices = {
