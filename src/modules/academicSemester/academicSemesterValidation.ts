@@ -9,7 +9,7 @@ import { TAcademicSemesterName } from './academicSemester.interface';
 const createAcademicSemesterValidation = z.object({
   body: z.object({
     name: z.enum([...academicSemesterName] as TAcademicSemesterName[]),
-    year: z.date(),
+    year: z.string(),
     code: z.enum([...academicSemesterCode]),
     startMonth: z.enum([...months]),
     endMonth: z.enum([...months]),

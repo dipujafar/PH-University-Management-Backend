@@ -1,9 +1,6 @@
 import { model, Schema } from 'mongoose';
 import {
   TAcademicSemester,
-  TAcademicSemesterCode,
-  TAcademicSemesterName,
-  TMonths,
 } from './academicSemester.interface';
 import { academicSemesterCode, academicSemesterName, months } from './academicSemester.constant';
 
@@ -28,7 +25,7 @@ const academicSemesterSchema = new Schema<TAcademicSemester>(
       required: true,
     },
     year: {
-      type: Date,
+      type: String,
       required: true,
     },
     startMonth: {
@@ -48,7 +45,9 @@ const academicSemesterSchema = new Schema<TAcademicSemester>(
       },
     },
   },
-  {},
+  {
+    timestamps: true,
+  },
 );
 
 export const AcademicSemester = model<TAcademicSemester>(
