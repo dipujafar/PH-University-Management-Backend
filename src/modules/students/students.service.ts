@@ -13,13 +13,18 @@ const getSingleStudentFromDB = async (id: string) => {
 };
 
 const updateSingleStudentFromDB = async (id: string, data: TStudents) => {
-  console.log(data);
-  const result = await Student.updateOne({ id }, { $set: data });
+  const result = await Student.findOneAndUpdate({ id }, data, { new: true });
   return result;
 };
 
 const deleteSingleStudentFromDB = async (id: string) => {
-  const result = await Student.updateOne({ id }, { isDeleted: true });
+  const result = await Student.findOneAndUpdate(
+    { id },
+    { isDeleted: true },
+    {
+      new: true,
+    },
+  );
   return result;
 };
 

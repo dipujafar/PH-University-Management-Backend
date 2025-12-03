@@ -1,6 +1,14 @@
 import { z } from 'zod';
 
-const academicFacultyValidationSchema = z.object({
+const createAcademicFacultyValidationSchema = z.object({
+  name: z
+    .string({
+      message: 'Academic Faculty must be a string',
+    })
+    .nonempty('Academic Faculty is required'),
+});
+
+const updateAcademicSemesterValidationSchema = z.object({
   name: z
     .string({
       message: 'Academic Faculty must be a string',
@@ -9,5 +17,6 @@ const academicFacultyValidationSchema = z.object({
 });
 
 export const AcademicFacultyValidation = {
-  academicFacultyValidationSchema,
+  createAcademicFacultyValidationSchema,
+  updateAcademicSemesterValidationSchema,
 };
