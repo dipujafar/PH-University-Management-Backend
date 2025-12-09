@@ -8,7 +8,7 @@ const createAcademicFacultyValidationSchema = z.object({
     .nonempty('Academic Faculty is required'),
 });
 
-const updateAcademicSemesterValidationSchema = z.object({
+const updateAcademicFacultyValidationSchema = z.object({
   name: z
     .string({
       message: 'Academic Faculty must be a string',
@@ -18,5 +18,5 @@ const updateAcademicSemesterValidationSchema = z.object({
 
 export const AcademicFacultyValidation = {
   createAcademicFacultyValidationSchema,
-  updateAcademicSemesterValidationSchema,
+  updateAcademicFacultyValidationSchema,
 };
