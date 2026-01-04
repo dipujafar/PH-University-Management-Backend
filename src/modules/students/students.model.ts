@@ -90,7 +90,12 @@ const localGuardianSchema = new Schema({
 const studentSchema = new Schema<TStudents, StudentModel>(
   {
     id: { type: String, required: true, unique: true },
-    user: { type: Schema.Types.ObjectId, ref: 'User', required: [true, 'User is required'], unique: true },
+    user: {
+      type: Schema.Types.ObjectId,
+      ref: 'User',
+      required: [true, 'User is required'],
+      unique: true,
+    },
     name: { type: nameSchema, required: [true, 'Name is required'] },
     gender: {
       type: String,
@@ -141,6 +146,11 @@ const studentSchema = new Schema<TStudents, StudentModel>(
       ref: 'AcademicSemester',
       required: true,
     },
+    academicDepartment: {
+      type: Schema.Types.ObjectId,
+      ref: 'AcademicDepartment',
+      required: true,
+    },
     isDeleted: {
       type: Boolean,
       default: false,
@@ -151,8 +161,6 @@ const studentSchema = new Schema<TStudents, StudentModel>(
   },
 );
 
-
-
 // virtual
 studentSchema.virtual('fullName').get(function () {
   return (
@@ -160,11 +168,18 @@ studentSchema.virtual('fullName').get(function () {
   );
 });
 
-
-
 // query middleware
 studentSchema.pre('find', function (next) {
   this.find({ isDeleted: { $ne: true } });
+  next();
+});
+
+// check the email this exit or not
+studentSchema.pre('save', async function (next) {
+  const isEmailExit = await Student.findOne({ email: this.email });
+  if (isEmailExit) {
+    throw new Error('Email is already exist');
+  }
   next();
 });
 
