@@ -1,6 +1,8 @@
 import { Schema, model } from 'mongoose';
 import { StudentModel, TStudents } from './students.interface';
 import validator from 'validator';
+import AppError from '../../app/errors/AppError';
+import httpStatus from 'http-status';
 
 const nameSchema = new Schema({
   firstName: {
@@ -178,7 +180,7 @@ studentSchema.pre('find', function (next) {
 studentSchema.pre('save', async function (next) {
   const isEmailExit = await Student.findOne({ email: this.email });
   if (isEmailExit) {
-    throw new Error('Email is already exist');
+    throw new AppError(httpStatus.CONFLICT,'Email is already exist');
   }
   next();
 });
