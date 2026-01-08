@@ -12,6 +12,10 @@ router.post(
   ),
   academicFacultyController.createAcademicFaculty,
 );
+router.post(
+  '/generate-report',
+  academicFacultyController.generateReport,
+);
 
 router.get('/', academicFacultyController.getAllAcademicFaculties);
 

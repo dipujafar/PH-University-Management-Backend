@@ -1,3 +1,4 @@
+import { startSession } from 'mongoose';
 import config from '../../app/config';
 import { TAcademicSemester } from '../academicSemester/academicSemester.interface';
 import { AcademicSemester } from '../academicSemester/academicSemester.model';
@@ -6,6 +7,8 @@ import { Student } from '../students/students.model';
 import { TUser } from './user.interface';
 import { User } from './user.model';
 import { generateStudentId } from './user.utils';
+import AppError from '../../app/errors/AppError';
+import httpStatus from 'http-status';
 
 const createStudentIntoDB = async (password: string, payload: TStudents) => {
   const user: Partial<TUser> = {};
@@ -16,17 +19,38 @@ const createStudentIntoDB = async (password: string, payload: TStudents) => {
     payload.academicSemester,
   );
 
-  user.id = await generateStudentId(academicSemester as TAcademicSemester);
+  if (!academicSemester) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Academic semester not found');
+  }
 
-  //  at first  create a user
-  const newUser = await User.create(user);
-  //   then create a student
-  if (Object?.keys(newUser)?.length) {
-    payload.id = newUser?.id; // embedding student id
-    payload.user = newUser?._id; // referencing user id
+  const session = await startSession();
 
-    const newStudent = await Student.create(payload);
+  try {
+    session.startTransaction();
+
+    user.id = await generateStudentId(academicSemester as TAcademicSemester);
+
+    const newUser = await User.create([user], { session });
+    if (!newUser.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create user');
+    }
+
+    payload.id = newUser[0].id;
+    payload.user = newUser[0]._id;
+
+    const newStudent = await Student.create([payload], { session });
+    if (!newStudent.length) {
+      throw new AppError(httpStatus.BAD_REQUEST, 'Failed to create student');
+    }
+
+    await session.commitTransaction();
+    await session.endSession();
+
     return newStudent;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
   }
 };
 

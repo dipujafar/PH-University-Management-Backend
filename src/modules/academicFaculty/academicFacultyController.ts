@@ -16,6 +16,19 @@ const createAcademicFaculty = catchAsync(async (req, res) => {
   });
 });
 
+const generateReport = catchAsync(async (req, res) => {
+  const result = await AcademicFacultyServices.fillFreedomPdf(
+    req.body,
+  );
+
+  sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: 'Successfully generated report',
+    data: "",
+  });
+});
+
 const getAllAcademicFaculties = catchAsync(async (req, res) => {
   const result = await AcademicFacultyServices.getAcademicFacultiesFromDB();
 
@@ -59,4 +72,5 @@ export const  academicFacultyController = {
   getAllAcademicFaculties,
   getSingleAcademicFacultyFromDB,
   updateAcademicSemester,
+  generateReport
 };
