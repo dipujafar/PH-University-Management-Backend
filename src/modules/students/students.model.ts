@@ -201,6 +201,15 @@ studentSchema.statics.isUserExists = async function (id: string) {
   return existingUser;
 };
 
+studentSchema.pre('findOneAndUpdate', async function (next) {
+  const id = this.getQuery().id;
+  const studentExists = await Student.isUserExists(id);
+  if (!studentExists) {
+    throw new AppError(httpStatus.NOT_FOUND, 'Student not found');
+  }
+  next();
+})
+
 //  creating a custom instance method
 // studentSchema.methods.isUserExists = async function (id: string) {
 //   const existingUser = await Student.findOne({ id });
