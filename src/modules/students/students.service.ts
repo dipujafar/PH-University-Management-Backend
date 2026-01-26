@@ -14,7 +14,7 @@ const getAllStudentsFromDB = async () => {
 
 const getSingleStudentFromDB = async (id: string) => {
   // const result = await Student.findOne({ id });
-  const result = await Student.findById(id)
+  const result = await Student.findOne({id})
     .populate('academicSemester')
     .populate({ path: 'academicDepartment', populate: 'academicFaculty' });
   return result;
@@ -56,7 +56,7 @@ const deleteSingleStudentFromDB = async (id: string) => {
   } catch (err) {
     await session.abortTransaction();
     await session.endSession();
-    throw err;
+    throw new AppError(httpStatus.BAD_REQUEST, 'Failed to delete student');
   }
 };
 
