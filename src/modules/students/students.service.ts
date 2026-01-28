@@ -14,14 +14,45 @@ const getAllStudentsFromDB = async () => {
 
 const getSingleStudentFromDB = async (id: string) => {
   // const result = await Student.findOne({ id });
-  const result = await Student.findOne({id})
+  const result = await Student.findOne({ id })
     .populate('academicSemester')
     .populate({ path: 'academicDepartment', populate: 'academicFaculty' });
   return result;
 };
 
-const updateSingleStudentFromDB = async (id: string, data: TStudents) => {
-  const result = await Student.findOneAndUpdate({ id }, data, { new: true });
+const updateSingleStudentFromDB = async (
+  id: string,
+  payload: Partial<TStudents>,
+) => {
+  console.log({ id, payload });
+  const { name, guardian, localGuardian, ...remainingStudentData } = payload;
+
+  const modifiedUpdatedData: Record<string, unknown> = {
+    ...remainingStudentData,
+  };
+
+  if (name && Object.keys(name).length) {
+    for (const [key, value] of Object.entries(name)) {
+      modifiedUpdatedData[`name.${key}`] = value;
+    }
+  }
+
+  if (guardian && Object.keys(guardian).length) {
+    for (const [key, value] of Object.entries(guardian)) {
+      modifiedUpdatedData[`guardian.${key}`] = value;
+    }
+  }
+  if (localGuardian && Object.keys(localGuardian).length) {
+    for (const [key, value] of Object.entries(localGuardian)) {
+      modifiedUpdatedData[`localGuardian.${key}`] = value;
+    }
+  }
+
+
+  const result = await Student.findOneAndUpdate({ id }, modifiedUpdatedData, {
+    new: true,
+    runValidators: true,
+  });
   return result;
 };
 
