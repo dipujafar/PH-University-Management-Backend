@@ -4,7 +4,7 @@ import { TErrorSources } from '../interface/error';
 import config from '../config';
 import handleZodError from '../errors/handleZodError';
 import handleValidationError from '../errors/handleValidationError';
-
+import handleCastError from '../errors/handleCastError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let status = err.statusCode || 500;
@@ -17,14 +17,18 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     },
   ];
 
-  
   if (err instanceof ZodError) {
     const simplifiedError = handleZodError(err);
     status = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
-  } else if(err.name === 'ValidationError'){
+  } else if (err.name === 'ValidationError') {
     const simplifiedError = handleValidationError(err);
+    status = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+  } else if (err.name === 'CastError') {
+    const simplifiedError = handleCastError(err);
     status = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
@@ -34,7 +38,8 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     success: false,
     message,
     errorSources,
-    stack: config.NODE_ENV === 'development' ?  err.stack : null,
+    err: err,
+    stack: config.NODE_ENV === 'development' ? err.stack : null,
   });
 };
 
