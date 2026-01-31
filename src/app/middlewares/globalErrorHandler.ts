@@ -5,6 +5,7 @@ import config from '../config';
 import handleZodError from '../errors/handleZodError';
 import handleValidationError from '../errors/handleValidationError';
 import handleCastError from '../errors/handleCastError';
+import { handleDuplicateError } from '../errors/handleDuplicateError';
 
 const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
   let status = err.statusCode || 500;
@@ -32,6 +33,12 @@ const globalErrorHandler: ErrorRequestHandler = (err, req, res, next) => {
     status = simplifiedError?.statusCode;
     message = simplifiedError?.message;
     errorSources = simplifiedError?.errorSources;
+  } else if (err.code === 11000) {
+    const simplifiedError = handleDuplicateError(err);
+    status = simplifiedError?.statusCode;
+    message = simplifiedError?.message;
+    errorSources = simplifiedError?.errorSources;
+
   }
 
   return res.status(status).json({
